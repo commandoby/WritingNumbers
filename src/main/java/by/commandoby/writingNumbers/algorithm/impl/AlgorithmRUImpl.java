@@ -1,30 +1,38 @@
 package by.commandoby.writingNumbers.algorithm.impl;
 
 import by.commandoby.writingNumbers.IO.RecipeReader;
-import by.commandoby.writingNumbers.IO.impl.RecipeReaderImpl;
+import by.commandoby.writingNumbers.IO.impl.RecipeReaderRUImpl;
 import by.commandoby.writingNumbers.algorithm.Algorithm;
 import by.commandoby.writingNumbers.exceptions.NotNumberException;
 import org.apache.log4j.Logger;
 
+import java.math.BigInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class AlgorithmImpl implements Algorithm {
-    private static final Logger log = Logger.getLogger(AlgorithmImpl.class);
-    private final RecipeReader recipeReader = new RecipeReaderImpl();
+public class AlgorithmRUImpl implements Algorithm {
+    private static final Logger log = Logger.getLogger(AlgorithmRUImpl.class);
+    private final RecipeReader recipeReader = new RecipeReaderRUImpl();
 
     @Override
     public String translateNumber(String number) {
         String text = null;
         try {
-            StringBuilder textBuilder = new StringBuilder();
-            long fullNumber = recognizeTheNumber(number.trim());
+            if (recognizeNumber(number)) {
+                StringBuilder textBuilder = new StringBuilder();
+                boolean isNegative = recognizeNegativeNumber(number);
+                BigInteger fullNumber = stringInBigInteger(number.trim());
 
-            if (fullNumber < 0) {
-                textBuilder.append("минус");
-                text = twentyOneDigitRecipe(textBuilder, fullNumber * (-1)).toString();
-            } else {
-                text = twentyOneDigitRecipe(textBuilder, fullNumber).toString();
+                if (isNegative && fullNumber.compareTo(new BigInteger("0")) != 0) textBuilder.append("минус");
+                if (isBigNumber(fullNumber)) {
+                    twentyOneDigitRecipe(textBuilder, fullNumber);
+                } else {
+                    int numberOfCharacters = searchForTheNumberOfCharacters(fullNumber);
+                    largeNumberRecipes(textBuilder, fullNumber, numberOfCharacters);
+                    textBuilder.append(" умножить на десять в степени");
+                    twelveDigitRecipe(textBuilder, new BigInteger(Integer.toString(numberOfCharacters - 3)));
+                }
+                text = textBuilder.toString();
             }
         } catch (NotNumberException e) {
             log.error(e);
@@ -32,22 +40,46 @@ public class AlgorithmImpl implements Algorithm {
         return text;
     }
 
-    private long recognizeTheNumber(String number) throws NotNumberException {
+    private boolean recognizeNumber(String number) throws NotNumberException {
         if (number.matches("(-)?( )*\\d*")) {
-            Pattern pattern = Pattern.compile("-");
-            Matcher matcher = pattern.matcher(number);
-            if (matcher.find()) {
-                return Long.parseLong(matcher.replaceAll(" ").trim()) * (-1);
-            }
-            return Long.parseLong(number.trim());
+            return true;
         }
         throw new NotNumberException("\"" + number + "\" - is not a natural number.");
     }
 
+    private boolean recognizeNegativeNumber(String number) {
+        Pattern pattern = Pattern.compile("-");
+        Matcher matcher = pattern.matcher(number);
+        return matcher.find();
+    }
+
+    private BigInteger stringInBigInteger(String number) {
+        return new BigInteger(number.replaceAll("-", "").trim());
+    }
+
+    private boolean isBigNumber(BigInteger number) {
+        return number.divide(new BigInteger("1000000000000000000000"))
+                .compareTo(new BigInteger("0")) == 0;
+    }
+
+    private int searchForTheNumberOfCharacters(BigInteger number) {
+        int numberOfCharacters = 0;
+        while (true) {
+            if (number.compareTo(new BigInteger("10").pow(numberOfCharacters)) > 0) {
+                numberOfCharacters++;
+            } else {
+                break;
+            }
+        }
+        return numberOfCharacters;
+    }
+
 //    ------------------------------------
 
-    private void threeDigitRecipe(StringBuilder text, long fullNumber) {
-        int number = (int) (fullNumber % 1000);
+    private void threeDigitRecipe(StringBuilder text, BigInteger fullNumber) {
+        int number = fullNumber
+                .mod(new BigInteger("1000"))
+                .intValue();
 
         recipeHundreds(text, number / 100);
         if (number / 10 % 10 == 1) {
@@ -56,11 +88,13 @@ public class AlgorithmImpl implements Algorithm {
             recipeDozens(text, number / 10 % 10);
             recipeUnits(text, number % 10);
         }
-
     }
 
-    private void sixDigitRecipe(StringBuilder text, long fullNumber) {
-        int number = (int) (fullNumber / 1000 % 1000);
+    private void sixDigitRecipe(StringBuilder text, BigInteger fullNumber) {
+        int number = fullNumber
+                .divide(new BigInteger("1000"))
+                .mod(new BigInteger("1000"))
+                .intValue();
 
         if (number != 0) {
             recipeHundreds(text, number / 100);
@@ -78,8 +112,11 @@ public class AlgorithmImpl implements Algorithm {
         threeDigitRecipe(text, fullNumber);
     }
 
-    private void nineDigitRecipe(StringBuilder text, long fullNumber) {
-        int number = (int) (fullNumber / 1000000 % 1000);
+    private void nineDigitRecipe(StringBuilder text, BigInteger fullNumber) {
+        int number = fullNumber
+                .divide(new BigInteger("1000000"))
+                .mod(new BigInteger("1000"))
+                .intValue();
 
         if (number != 0) {
             recipeHundreds(text, number / 100);
@@ -97,8 +134,11 @@ public class AlgorithmImpl implements Algorithm {
         sixDigitRecipe(text, fullNumber);
     }
 
-    private void twelveDigitRecipe(StringBuilder text, long fullNumber) {
-        int number = (int) (fullNumber / 1000000000 % 1000);
+    private void twelveDigitRecipe(StringBuilder text, BigInteger fullNumber) {
+        int number = fullNumber
+                .divide(new BigInteger("1000000000"))
+                .mod(new BigInteger("1000"))
+                .intValue();
 
         if (number != 0) {
             recipeHundreds(text, number / 100);
@@ -116,8 +156,11 @@ public class AlgorithmImpl implements Algorithm {
         nineDigitRecipe(text, fullNumber);
     }
 
-    private void fifteenDigitRecipe(StringBuilder text, long fullNumber) {
-        int number = (int) (fullNumber / 1000000000 / 1000 % 1000);
+    private void fifteenDigitRecipe(StringBuilder text, BigInteger fullNumber) {
+        int number = fullNumber
+                .divide(new BigInteger("1000000000000"))
+                .mod(new BigInteger("1000"))
+                .intValue();
 
         if (number != 0) {
             recipeHundreds(text, number / 100);
@@ -135,8 +178,11 @@ public class AlgorithmImpl implements Algorithm {
         twelveDigitRecipe(text, fullNumber);
     }
 
-    private void eighteenDigitRecipe(StringBuilder text, long fullNumber) {
-        int number = (int) (fullNumber / 1000000000 / 1000000 % 1000);
+    private void eighteenDigitRecipe(StringBuilder text, BigInteger fullNumber) {
+        int number = fullNumber
+                .divide(new BigInteger("1000000000000000"))
+                .mod(new BigInteger("1000"))
+                .intValue();
 
         if (number != 0) {
             recipeHundreds(text, number / 100);
@@ -154,8 +200,11 @@ public class AlgorithmImpl implements Algorithm {
         fifteenDigitRecipe(text, fullNumber);
     }
 
-    private StringBuilder twentyOneDigitRecipe(StringBuilder text, long fullNumber) {
-        int number = (int) (fullNumber / 1000000000 / 1000000000);
+    private void twentyOneDigitRecipe(StringBuilder text, BigInteger fullNumber) {
+        int number = fullNumber
+                .divide(new BigInteger("1000000000000000000"))
+                .mod(new BigInteger("1000"))
+                .intValue();
 
         if (number != 0) {
             recipeHundreds(text, number / 100);
@@ -171,7 +220,21 @@ public class AlgorithmImpl implements Algorithm {
         }
 
         eighteenDigitRecipe(text, fullNumber);
-        return text;
+    }
+
+    private void largeNumberRecipes(StringBuilder text, BigInteger fullNumber, int numberOfCharacters) {
+        int number = fullNumber
+                .divide(new BigInteger("10").pow(numberOfCharacters - 3))
+                .mod(new BigInteger("1000"))
+                .intValue();
+
+        recipeHundreds(text, number / 100);
+        if (number / 10 % 10 == 1) {
+            recipeTeens(text, number % 10);
+        } else {
+            recipeDozens(text, number / 10 % 10);
+            recipeUnits(text, number % 10);
+        }
     }
 
 //    ---------------------------

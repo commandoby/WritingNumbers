@@ -11,19 +11,19 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RecipeReaderImpl implements RecipeReader {
-    private static Logger log = Logger.getLogger(RecipeReaderImpl.class);
+public class RecipeReaderRUImpl implements RecipeReader {
+    private static final Logger log = Logger.getLogger(RecipeReaderRUImpl.class);
 
-    private List<String> unitList;
-    private List<String> teenList;
-    private List<String> dozenList;
-    private List<String> hundredList;
-    private List<String> thousandList;
-    private List<String> millionList;
-    private List<String> billionList;
-    private List<String> trillionList;
-    private List<String> quadrillionList;
-    private List<String> quintillionList;
+    private final List<String> unitList;
+    private final List<String> teenList;
+    private final List<String> dozenList;
+    private final List<String> hundredList;
+    private final List<String> thousandList;
+    private final List<String> millionList;
+    private final List<String> billionList;
+    private final List<String> trillionList;
+    private final List<String> quadrillionList;
+    private final List<String> quintillionList;
 
     {
         unitList = readTheRecipeForNumbers(UNIT_FILE_PATH.getValue());
