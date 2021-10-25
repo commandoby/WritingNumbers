@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<textTemplate
+xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation = "TextTemplateSchema.xsd">
+    <units digits="0">
+        <value>ноль</value>
+        <value>один</value>
+        <value>два</value>
+        <value>три</value>
+        <value>четыре</value>
+        <value>пять</value>
+        <value>шесть</value>
+        <value>семь</value>
+        <value>восемь</value>
+        <value>девять</value>
+    </units>
+    <units digits="3">
+        <value>ноль</value>
+        <value>одна</value>
+        <value>две</value>
+        <value>три</value>
+        <value>четыре</value>
+        <value>пять</value>
+        <value>шесть</value>
+        <value>семь</value>
+        <value>восемь</value>
+        <value>девять</value>
+    </units>
+    <teens digits="0">
+        <value>десять</value>
+        <value>одиннадцать</value>
+        <value>двенадцать</value>
+        <value>тринадцать</value>
+        <value>четырнадцать</value>
+        <value>пятнадцать</value>
+        <value>шестнадцать</value>
+        <value>семнадцать</value>
+        <value>восемнадцать</value>
+        <value>девятнадцать</value>
+    </teens>
+    <dozens digits="0">
+        <value>ноль</value>
+        <value>десять</value>
+        <value>двадцать</value>
+        <value>тридцать</value>
+        <value>сорок</value>
+        <value>пятьдесят</value>
+        <value>шестьдесят</value>
+        <value>семьдесят</value>
+        <value>восемьдесят</value>
+        <value>девяносто</value>
+    </dozens>
+    <hundreds digits="0">
+        <value>ноль</value>
+        <value>сто</value>
+        <value>двести</value>
+        <value>триста</value>
+        <value>четыреста</value>
+        <value>пятьсот</value>
+        <value>шестьсот</value>
+        <value>семьсот</value>
+        <value>восемьсот</value>
+        <value>девятьсот</value>
+    </hundreds>
+    <thousands digits="3">
+        <value>тысяч</value>
+        <value>тысяча</value>
+        <value>тысячи</value>
+        <value>тысячи</value>
+        <value>тысячи</value>
+        <value>тысяч</value>
+        <value>тысяч</value>
+        <value>тысяч</value>
+        <value>тысяч</value>
+        <value>тысяч</value>
+    </thousands>
+    <thousands digits="6">
+        <value>миллионов</value>
+        <value>миллион</value>
+        <value>миллиона</value>
+        <value>миллиона</value>
+        <value>миллиона</value>
+        <value>миллионов</value>
+        <value>миллионов</value>
+        <value>миллионов</value>
+        <value>миллионов</value>
+        <value>миллионов</value>
+    </thousands>
+    <thousands digits="9">
+        <value>миллиардов</value>
+        <value>миллиард</value>
+        <value>миллиарда</value>
+        <value>миллиарда</value>
+        <value>миллиарда</value>
+        <value>миллиардов</value>
+        <value>миллиардов</value>
+        <value>миллиардов</value>
+        <value>миллиардов</value>
+        <value>миллиардов</value>
+    </thousands>
+    <thousands digits="12">
+        <value>триллионов</value>
+        <value>триллион</value>
+        <value>триллиона</value>
+        <value>триллиона</value>
+        <value>триллиона</value>
+        <value>триллионов</value>
+        <value>триллионов</value>
+        <value>триллионов</value>
+        <value>триллионов</value>
+        <value>триллионов</value>
+    </thousands>
+    <thousands digits="15">
+        <value>квадриллионов</value>
+        <value>квадриллион</value>
+        <value>квадриллиона</value>
+        <value>квадриллиона</value>
+        <value>квадриллиона</value>
+        <value>квадриллионов</value>
+        <value>квадриллионов</value>
+        <value>квадриллионов</value>
+        <value>квадриллионов</value>
+        <value>квадриллионов</value>
+    </thousands>
+    <thousands digits="18">
+        <value>квинтиллионов</value>
+        <value>квинтиллион</value>
+        <value>квинтиллиона</value>
+        <value>квинтиллиона</value>
+        <value>квинтиллиона</value>
+        <value>квинтиллионов</value>
+        <value>квинтиллионов</value>
+        <value>квинтиллионов</value>
+        <value>квинтиллионов</value>
+        <value>квинтиллионов</value>
+    </thousands>
+    <thousands digits="21">
+        <value>секстиллионов</value>
+        <value>секстиллион</value>
+        <value>секстиллиона</value>
+        <value>секстиллиона</value>
+        <value>секстиллиона</value>
+        <value>секстиллионов</value>
+        <value>секстиллионов</value>
+        <value>секстиллионов</value>
+        <value>секстиллионов</value>
+        <value>секстиллионов</value>
+    </thousands>
+    <thousands digits="24">
+        <value>септиллионов</value>
+        <value>септиллион</value>
+        <value>септиллиона</value>
+        <value>септиллиона</value>
+        <value>септиллиона</value>
+        <value>септиллионов</value>
+        <value>септиллионов</value>
+        <value>септиллионов</value>
+        <value>септиллионов</value>
+        <value>септиллионов</value>
+    </thousands>
+</textTemplate>

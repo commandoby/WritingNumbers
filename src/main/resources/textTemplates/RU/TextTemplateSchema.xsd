@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mw:schema xmlns:mw="http://www.w3.org/2001/XMLSchema">
+    <mw:element name="textTemplate">
+        <mw:complexType>
+            <mw:sequence>
+                <mw:element name="units" maxOccurs="unbounded">
+                    <mw:complexType>
+                        <mw:sequence>
+                            <mw:element name="value" type="mw:string" minOccurs="10" maxOccurs="unbounded"/>
+                        </mw:sequence>
+                        <mw:attribute name="digits" type="mw:integer"/>
+                    </mw:complexType>
+                </mw:element>
+                <mw:element name="teens" maxOccurs="unbounded">
+                    <mw:complexType>
+                        <mw:sequence>
+                            <mw:element name="value" type="mw:string" minOccurs="10" maxOccurs="unbounded"/>
+                        </mw:sequence>
+                        <mw:attribute name="digits" type="mw:integer"/>
+                    </mw:complexType>
+                </mw:element>
+                <mw:element name="dozens" maxOccurs="unbounded">
+                    <mw:complexType>
+                        <mw:sequence>
+                            <mw:element name="value" type="mw:string" minOccurs="10" maxOccurs="unbounded"/>
+                        </mw:sequence>
+                        <mw:attribute name="digits" type="mw:integer"/>
+                    </mw:complexType>
+                </mw:element>
+                <mw:element name="hundreds" maxOccurs="unbounded">
+                    <mw:complexType>
+                        <mw:sequence>
+                            <mw:element name="value" type="mw:string" minOccurs="10" maxOccurs="unbounded"/>
+                        </mw:sequence>
+                        <mw:attribute name="digits" type="mw:integer"/>
+                    </mw:complexType>
+                </mw:element>
+                <mw:element name="thousands" maxOccurs="unbounded">
+                    <mw:complexType>
+                        <mw:sequence>
+                            <mw:element name="value" type="mw:string" minOccurs="10" maxOccurs="unbounded"/>
+                        </mw:sequence>
+                        <mw:attribute name="digits" type="mw:integer"/>
+                    </mw:complexType>
+                </mw:element>
+            </mw:sequence>
+        </mw:complexType>
+    </mw:element>
+</mw:schema>

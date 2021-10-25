@@ -1,7 +1,7 @@
 package by.commandoby.writingNumbers.algorithm.impl;
 
-import by.commandoby.writingNumbers.IO.RecipeReader;
-import by.commandoby.writingNumbers.IO.impl.RecipeReaderRUImpl;
+import by.commandoby.writingNumbers.DOM.DOMParserReader;
+import by.commandoby.writingNumbers.DOM.impl.DOMParserReaderImpl;
 import by.commandoby.writingNumbers.algorithm.Algorithm;
 import by.commandoby.writingNumbers.exceptions.NotNumberException;
 import org.apache.log4j.Logger;
@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 public class AlgorithmRUImpl implements Algorithm {
     private static final Logger log = Logger.getLogger(AlgorithmRUImpl.class);
-    private final RecipeReader recipeReader = new RecipeReaderRUImpl();
+    private final DOMParserReader parserReader = new DOMParserReaderImpl();
 
     @Override
     public String translateNumber(String number) {
@@ -24,13 +24,8 @@ public class AlgorithmRUImpl implements Algorithm {
                 BigInteger fullNumber = stringInBigInteger(number.trim());
 
                 if (isNegative && fullNumber.compareTo(new BigInteger("0")) != 0) textBuilder.append("минус");
-                if (isBigNumber(fullNumber)) {
-                    twentyOneDigitRecipe(textBuilder, fullNumber);
-                } else {
-                    int numberOfCharacters = searchForTheNumberOfCharacters(fullNumber);
-                    largeNumberRecipes(textBuilder, fullNumber, numberOfCharacters);
-                    textBuilder.append(" умножить на десять в степени");
-                    twelveDigitRecipe(textBuilder, new BigInteger(Integer.toString(numberOfCharacters - 3)));
+                for (int i = 0; i <= searchMaxDigits(fullNumber) / 3; i++) {
+                    threeDigitRecipe(textBuilder, fullNumber, searchMaxDigits(fullNumber) - i * 3);
                 }
                 text = textBuilder.toString();
             }
@@ -57,251 +52,57 @@ public class AlgorithmRUImpl implements Algorithm {
         return new BigInteger(number.replaceAll("-", "").trim());
     }
 
-    private boolean isBigNumber(BigInteger number) {
-        return number.divide(new BigInteger("1000000000000000000000"))
-                .compareTo(new BigInteger("0")) == 0;
-    }
-
-    private int searchForTheNumberOfCharacters(BigInteger number) {
-        int numberOfCharacters = 0;
-        while (true) {
-            if (number.compareTo(new BigInteger("10").pow(numberOfCharacters)) > 0) {
-                numberOfCharacters++;
-            } else {
-                break;
-            }
-        }
+    private int searchMaxDigits(BigInteger number) {
+        int numberOfCharacters = number.toString().length() - 1;
+        numberOfCharacters /= 3;
+        numberOfCharacters *= 3;
         return numberOfCharacters;
     }
 
-//    ------------------------------------
-
-    private void threeDigitRecipe(StringBuilder text, BigInteger fullNumber) {
+    private void threeDigitRecipe(StringBuilder textBuilder, BigInteger fullNumber, int digits) {
         int number = fullNumber
+                .divide(new BigInteger(String.valueOf(Math.round(Math.pow(10, digits)))))
                 .mod(new BigInteger("1000"))
                 .intValue();
 
-        recipeHundreds(text, number / 100);
-        if (number / 10 % 10 == 1) {
-            recipeTeens(text, number % 10);
+        if (number != 0) {
+            recipePartOfNumber(textBuilder, number / 100, digits, 100);
+            if (number / 10 % 10 == 1) {
+                recipePartOfNumber(textBuilder, number % 10, digits, 11);
+                recipeThousands(textBuilder, 0, digits);
+            } else {
+                recipePartOfNumber(textBuilder, number / 10 % 10, digits, 10);
+                recipePartOfNumber(textBuilder, number % 10, digits, 1);
+                recipeThousands(textBuilder, number % 10, digits);
+            }
         } else {
-            recipeDozens(text, number / 10 % 10);
-            recipeUnits(text, number % 10);
-        }
-    }
-
-    private void sixDigitRecipe(StringBuilder text, BigInteger fullNumber) {
-        int number = fullNumber
-                .divide(new BigInteger("1000"))
-                .mod(new BigInteger("1000"))
-                .intValue();
-
-        if (number != 0) {
-            recipeHundreds(text, number / 100);
-            if (number / 10 % 10 == 1) {
-                recipeTeens(text, number % 10);
-                text.append(" ").append(recipeReader.getThousandList().get(0));
-            } else {
-                recipeDozens(text, number / 10 % 10);
-                recipeThousandUnits(text, number % 10);
-                recipeThousands(text, number % 10);
+            if (textBuilder.isEmpty() && digits == 0) {
+                textBuilder.append(parserReader.getTextList(0, 1).get(0));
             }
-            if (number % 100 == 0) text.append(" ").append(recipeReader.getThousandList().get(0));
         }
-
-        threeDigitRecipe(text, fullNumber);
     }
 
-    private void nineDigitRecipe(StringBuilder text, BigInteger fullNumber) {
-        int number = fullNumber
-                .divide(new BigInteger("1000000"))
-                .mod(new BigInteger("1000"))
-                .intValue();
-
+    private void recipePartOfNumber(StringBuilder textBuilder, int number, int digits, int partOfNumber) {
         if (number != 0) {
-            recipeHundreds(text, number / 100);
-            if (number / 10 % 10 == 1) {
-                recipeTeens(text, number % 10);
-                text.append(" ").append(recipeReader.getMillionList().get(0));
+            if (!textBuilder.isEmpty()) textBuilder.append(" ");
+            if (parserReader.getTextList(digits, partOfNumber) != null
+                    && !parserReader.getTextList(digits, partOfNumber).isEmpty()) {
+                textBuilder.append(parserReader.getTextList(digits, partOfNumber).get(number));
             } else {
-                recipeDozens(text, number / 10 % 10);
-                recipeUnits(text, number % 10);
-                recipeMillions(text, number % 10);
+                textBuilder.append(parserReader.getTextList(0, partOfNumber).get(number));
             }
-            if (number % 100 == 0) text.append(" ").append(recipeReader.getMillionList().get(0));
         }
-
-        sixDigitRecipe(text, fullNumber);
     }
 
-    private void twelveDigitRecipe(StringBuilder text, BigInteger fullNumber) {
-        int number = fullNumber
-                .divide(new BigInteger("1000000000"))
-                .mod(new BigInteger("1000"))
-                .intValue();
-
-        if (number != 0) {
-            recipeHundreds(text, number / 100);
-            if (number / 10 % 10 == 1) {
-                recipeTeens(text, number % 10);
-                text.append(" ").append(recipeReader.getBillionList().get(0));
-            } else {
-                recipeDozens(text, number / 10 % 10);
-                recipeUnits(text, number % 10);
-                recipeBillions(text, number % 10);
+    private void recipeThousands(StringBuilder textBuilder, int number, int digits) {
+        if (digits != 0) {
+            if (!textBuilder.isEmpty()) textBuilder.append(" ");
+            try {
+                textBuilder.append(parserReader.getTextList(digits, 0).get(number));
+            } catch (NullPointerException e) {
+                log.error("The library does not contain thousands of numbers with more than "
+                        + digits + " characters.", e);
             }
-            if (number % 100 == 0) text.append(" ").append(recipeReader.getBillionList().get(0));
         }
-
-        nineDigitRecipe(text, fullNumber);
-    }
-
-    private void fifteenDigitRecipe(StringBuilder text, BigInteger fullNumber) {
-        int number = fullNumber
-                .divide(new BigInteger("1000000000000"))
-                .mod(new BigInteger("1000"))
-                .intValue();
-
-        if (number != 0) {
-            recipeHundreds(text, number / 100);
-            if (number / 10 % 10 == 1) {
-                recipeTeens(text, number % 10);
-                text.append(" ").append(recipeReader.getTrillionList().get(0));
-            } else {
-                recipeDozens(text, number / 10 % 10);
-                recipeUnits(text, number % 10);
-                recipeTrillions(text, number % 10);
-            }
-            if (number % 100 == 0) text.append(" ").append(recipeReader.getTrillionList().get(0));
-        }
-
-        twelveDigitRecipe(text, fullNumber);
-    }
-
-    private void eighteenDigitRecipe(StringBuilder text, BigInteger fullNumber) {
-        int number = fullNumber
-                .divide(new BigInteger("1000000000000000"))
-                .mod(new BigInteger("1000"))
-                .intValue();
-
-        if (number != 0) {
-            recipeHundreds(text, number / 100);
-            if (number / 10 % 10 == 1) {
-                recipeTeens(text, number % 10);
-                text.append(" ").append(recipeReader.getQuadrillionList().get(0));
-            } else {
-                recipeDozens(text, number / 10 % 10);
-                recipeUnits(text, number % 10);
-                recipeQuadrillions(text, number % 10);
-            }
-            if (number % 100 == 0) text.append(" ").append(recipeReader.getQuadrillionList().get(0));
-        }
-
-        fifteenDigitRecipe(text, fullNumber);
-    }
-
-    private void twentyOneDigitRecipe(StringBuilder text, BigInteger fullNumber) {
-        int number = fullNumber
-                .divide(new BigInteger("1000000000000000000"))
-                .mod(new BigInteger("1000"))
-                .intValue();
-
-        if (number != 0) {
-            recipeHundreds(text, number / 100);
-            if (number / 10 % 10 == 1) {
-                recipeTeens(text, number % 10);
-                text.append(" ").append(recipeReader.getQuintillionList().get(0));
-            } else {
-                recipeDozens(text, number / 10 % 10);
-                recipeUnits(text, number % 10);
-                recipeQuintillions(text, number % 10);
-            }
-            if (number % 100 == 0) text.append(" ").append(recipeReader.getQuintillionList().get(0));
-        }
-
-        eighteenDigitRecipe(text, fullNumber);
-    }
-
-    private void largeNumberRecipes(StringBuilder text, BigInteger fullNumber, int numberOfCharacters) {
-        int number = fullNumber
-                .divide(new BigInteger("10").pow(numberOfCharacters - 3))
-                .mod(new BigInteger("1000"))
-                .intValue();
-
-        recipeHundreds(text, number / 100);
-        if (number / 10 % 10 == 1) {
-            recipeTeens(text, number % 10);
-        } else {
-            recipeDozens(text, number / 10 % 10);
-            recipeUnits(text, number % 10);
-        }
-    }
-
-//    ---------------------------
-
-    private void recipeUnits(StringBuilder text, int number) {
-        if (number != 0) {
-            if (!text.isEmpty()) text.append(" ");
-            text.append(recipeReader.getUnitList().get(number));
-        }
-        if (text.isEmpty() && number == 0) {
-            text.append(recipeReader.getUnitList().get(0));
-        }
-    }
-
-    private void recipeTeens(StringBuilder text, int number) {
-        if (!text.isEmpty()) text.append(" ");
-        text.append(recipeReader.getTeenList().get(number));
-    }
-
-    private void recipeDozens(StringBuilder text, int number) {
-        if (number != 0) {
-            if (!text.isEmpty()) text.append(" ");
-            text.append(recipeReader.getDozenList().get(number));
-        }
-    }
-
-    private void recipeHundreds(StringBuilder text, int number) {
-        if (number != 0) {
-            if (!text.isEmpty()) text.append(" ");
-            text.append(recipeReader.getHundredList().get(number));
-        }
-    }
-
-    private void recipeThousandUnits(StringBuilder text, int number) {
-        if (number != 0) {
-            if (!text.isEmpty()) text.append(" ");
-            text.append(recipeReader.getThousandList().get(number + 10));
-        }
-    }
-
-    private void recipeThousands(StringBuilder text, int number) {
-        if (!text.isEmpty()) text.append(" ");
-        text.append(recipeReader.getThousandList().get(number));
-    }
-
-    private void recipeMillions(StringBuilder text, int number) {
-        if (!text.isEmpty()) text.append(" ");
-        text.append(recipeReader.getMillionList().get(number));
-    }
-
-    private void recipeBillions(StringBuilder text, int number) {
-        if (!text.isEmpty()) text.append(" ");
-        text.append(recipeReader.getBillionList().get(number));
-    }
-
-    private void recipeTrillions(StringBuilder text, int number) {
-        if (!text.isEmpty()) text.append(" ");
-        text.append(recipeReader.getTrillionList().get(number));
-    }
-
-    private void recipeQuadrillions(StringBuilder text, int number) {
-        if (!text.isEmpty()) text.append(" ");
-        text.append(recipeReader.getQuadrillionList().get(number));
-    }
-
-    private void recipeQuintillions(StringBuilder text, int number) {
-        if (!text.isEmpty()) text.append(" ");
-        text.append(recipeReader.getQuintillionList().get(number));
     }
 }
