@@ -158,4 +158,28 @@ xsi:noNamespaceSchemaLocation = "TextTemplateSchema.xsd">
         <value>септиллионов</value>
         <value>септиллионов</value>
     </thousands>
+    <thousands digits="27">
+        <value>октиллионов</value>
+        <value>октиллион</value>
+        <value>октиллиона</value>
+        <value>октиллиона</value>
+        <value>октиллиона</value>
+        <value>октиллионов</value>
+        <value>октиллионов</value>
+        <value>октиллионов</value>
+        <value>октиллионов</value>
+        <value>октиллионов</value>
+    </thousands>
+    <thousands digits="30">
+        <value>нониллионов</value>
+        <value>нониллион</value>
+        <value>нониллиона</value>
+        <value>нониллиона</value>
+        <value>нониллиона</value>
+        <value>нониллионов</value>
+        <value>нониллионов</value>
+        <value>нониллионов</value>
+        <value>нониллионов</value>
+        <value>нониллионов</value>
+    </thousands>
 </textTemplate>
